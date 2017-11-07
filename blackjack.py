@@ -239,9 +239,10 @@ class Player(object):
         PLAYER = 0
         DEALER = 1
 
-    def __init__(self, name, role = ROLE.PLAYER):
+    def __init__(self, name, deck, role = ROLE.PLAYER):
         self.name = name
         self.role = role
+        self.deck = deck
         self.cards = []
 
     # The role property indicates the type of the player:
@@ -261,6 +262,21 @@ class Player(object):
     def role(self):
         return self._role
 
+    # The deck is the deck where the player is picking cards from
+    @property
+    def deck(self):
+        return self._deck
+
+    @deck.setter
+    def deck(self, deck):
+        if not isinstance(deck, Deck):
+            raise Exception("The deck for each player must be of class type Deck")
+        self._deck = deck
+
+    @deck.deleter
+    def deck(self):
+        del self._deck
+
     # The cards property holds a list with the cards of the player
     @property
     def cards(self):
@@ -275,98 +291,99 @@ class Player(object):
         del self._cards
 
     #-------------------------------------------------------------
-    def pickCard(self, deck):
+    def pickCard(self):
         """
         Picks a card from the shoe in the deck and adds the card in the player's
         self.cards list
-
-        Arguments:
-         deck: An object of type Deck
         """
-        if not isinstance(deck, Deck):
-            raise Exception("The 'deck' argument must be of a 'Dect' class type.")
 
-        self.cards.append(deck.pick_card())
+        self.cards.append(self.deck.pick_card())
 
     #-------------------------------------------------------------
-    def initialPick(self, deck):
+    def initialPick(self):
         """
         If it is an initial pick, the player should
         get two cards from the shoe
-
-        Arguments:
-         deck: a valid deck of cards (Class type Deck)
         """
-        self.pickCard(deck)
-        self.pickCard(deck)
+        self.pickCard()
+        self.pickCard()
+
+    #-------------------------------------------------------------
+    def score(self):
+        """
+        Returns a list with the score for each card that the player
+        is currently holding
+        """
+        return [self.deck.get_card_value(card) for card in self.cards]
+
+    def total_score(self):
+        """
+        Returns the total score of the cards that the player
+        is currently holding
+        """
+        return sum(self.score())
+
 
 class blackjack(object):
     #-------------------------------------------------------------
-    def __init__(self, deck, players):
+    def __init__(self, deck, dealer, player):
         #Arguments:
         #    deck: a valid deck of cards (Class type Deck)
         #    players: A list of the players that play the game.
         self.deck = deck
-        self.players = players
-        self.validate_players()
+        self.dealer = dealer
+        self.player = player
+        isinstance(self.dealer, Player)
+        isinstance(self.player, Player)
+
+        if (self.deck is not self.player.deck) or (self.deck is not self.dealer.deck):
+            raise Exception("The Deck should be the same for self.deck, self.dealer.deck, self.player.deck")
+
+    @property
+    def player(self):
+        return self._player
+
+    @player.setter
+    def player(self, player):
+        if not self._is_player_role(player, Player.ROLE.PLAYER):
+            raise("The active player's role must be Player.ROLE.PLAYER")
+        self._player = player
+
+    @player.deleter
+    def player(self):
+        del self._player
+
+    @property
+    def dealer(self):
+        return self._dealer
+
+    @dealer.setter
+    def dealer(self, dealer):
+        if not self._is_player_role(dealer, Player.ROLE.DEALER):
+            raise("The active player's role must be Player.ROLE.DEALER")
+        self._dealer = dealer
+
+    @dealer.deleter
+    def dealer(self):
+        del self._dealer
 
     #-------------------------------------------------------------
-    def validate_players(self):
+    def _is_player_role(self, player, role):
         """
-        Validates all the players. Only one dealer must be in the game.
+        Function to make a boolean check if a 'player's role is 'role'
         """
-        one_dealer_found = False
-        for player in self.players:
-            if not isinstance(player, Player):
-                raise Exception("The player must be an instance of the Class type 'Player'")
-
-            if player.role == Player.ROLE.DEALER:
-                if one_dealer_found:
-                    raise Exception("Only one dealer is allowed in the game. More than one found.")
-                else:
-                    one_dealer_found = True
-
-        if not one_dealer_found:
-            raise Exception("You must be having one dealer in order to play the game.\n"
-                            "No dealer found in the list of available players.")
-
-    #-------------------------------------------------------------
-    def is_player_in_game(self, player):
-        """
-        Check if the given player is in the game.
-        """
-        if not isinstance(player, Player):
-            raise Exception("The player must be an instance of the Class type 'Player'")
-
-        max_name_len = max([len(player.name) for player in self.players])
-        if player not in self.players:
-            players_in_game = "\n".join(["   {:>{}} ({})".format(player.name, max_name_len, str(player)) for player in self.players])
-            raise Exception("\nThe player {} ({}) is not participating in this game.\n"
-                            "Players in the game:\n{}".format(player.name, player, players_in_game))
+        if player.role == role:
+            return True
+        else:
+            return False
 
     #-------------------------------------------------------------
     def initPick(self):
         """
         Makes an initial pick (draws two cards) for all the players.
         """
-        for player in self.players:
-            player.initialPick(self.deck)
-
-    #-------------------------------------------------------------
-    def calculate_score(self):
-        """
-        Calculates the score for all players and returns a dict with the
-        name of each player and their numeric sum of cards for quick comparison.
-
-        Returns:
-         A dict with the name of each player as the key and the
-         numeric sum of the cards of each player as the value.
-        """
-        scores = {}
-        for player in self.players:
-            scores[player.name] = sum([self.deck.get_card_value(card) for card in player.cards])
-
-        return scores
+        dealer.initialPick()
+        player.initialPick()
 
     #-------------------------------------------------------------
     def print_cards(self):
@@ -374,49 +391,84 @@ class blackjack(object):
         Prints the cards for all players
         """
         # Get the length of the longest name for alignment
-        max_name_len = max([len(player.name) for player in self.players])
+        max_name_len = max(len(player.name), len(dealer.name))
 
-        # Calculate the score for each player to print a total
-        scores = self.calculate_score()
-
-        for player in players:
-            print("{:>{}}: {} (Total: {})".format(player.name, max_name_len, ", ".join(player.cards), scores[player.name]))
+        print("{:>{}}: {} (Total: {})".format(dealer.name, max_name_len, ", ".join(dealer.cards), dealer.total_score()))
+        print("{:>{}}: {} (Total: {})".format(player.name, max_name_len, ", ".join(player.cards), player.total_score()))
 
     #-------------------------------------------------------------
-    def pickCard(self, player):
+    def find_winner(self):
         """
-        Picks a card for the given player
+        The find_winner function will return a dict with the following information:
+        {'winner':Person or None, 'who_draws':None or Person}
+        If there is a winner, the winner key will hold the Person class of the winner
+        (dealer or player), otherwise it will be empty. Similary, if there is no winner
+        yet (thus, the winner is None) the 'who_draws' key will hold the Person class
+        of the person that has to pick a card next.
+        """
+        # If both players pick 21, players wins
+        if dealer.total_score() == player.total_score() == 21:
+            return {'winner': player, 'who_draws': None}
+        # If both players pick 22, dealer wins
+        elif dealer.total_score() == player.total_score() == 22:
+            return {'winner': dealer, 'who_draws': None}
+        # If the dealer has 21,but not the player, the dealer wins
+        elif dealer.total_score() == 21:
+            return {'winner': dealer, 'who_draws': None}
+        # If the player has 21,but not the dealer, the player wins
+        elif player.total_score() == 21:
+            return {'winner': player, 'who_draws': None}
+        # If the players goes over 21, the dealer wins
+        elif player.total_score() > 21:
+            return {'winner': dealer, 'who_draws': None}
+        # If the dealer goes over 21, the player wins
+        elif dealer.total_score() > 21:
+            return {'winner': player, 'who_draws': None}
+        # If the player has less than 17, the player draws card
+        elif player.total_score() < 17:
+            return {'winner': None, 'who_draws': player}
+        # If the player has >= 17 and dealer has less than player, the dealer picks
+        elif player.total_score() >= 17 and dealer.total_score() <= player.total_score():
+            return {'winner': None, 'who_draws': dealer}
+        else:
+            return {'winner': dealer, 'who_draws': None}
+
+    #-------------------------------------------------------------
+    def autoplay(self, rounds = 1):
+        """
+        The game will autoplay as many rounds have been told to play
+        by the 'rounds' argument.
 
         Arguments:
-         player: The player to pick a card for.
+         rounds: The number of rounds to play
         """
-        self.is_player_in_game(player)
-        player.pickCard(self.deck)
+        # Initial pick for all players
+
+        self.initPick()
+
+        # Print the results and the winner
+        res = self.find_winner()
+        while not res['winner']:
+            res['who_draws'].pickCard()
+            res = self.find_winner()
+
+        print(res['winner'].name)
+        self.print_cards()
+
 
 
 
 if __name__ == "__main__":
-    # Just use two players. The dealer and one normal player
-    dealer = Player('Dealer', Player.ROLE.DEALER)
-    player = Player('Sam')
-
-    players = [dealer, player]
-
     # Use a single deck
     deck = Deck()
     # Shuffle the deck (The deck is shuffled once on each shoe
     # initialization, but reshuffling doesn't hurt)
     deck.shuffle_shoe()
 
-    blackjack = blackjack(deck, players)
+    # Just use two players. The dealer and one normal player
+    dealer = Player('dealer', deck, Player.ROLE.DEALER)
+    player = Player('sam', deck)
 
-    # Initial pick for all players
-    blackjack.initPick()
+    blackjack = blackjack(deck, dealer, player)
 
-    # Print the results and the winner
-    blackjack.print_cards()
-
-    blackjack.pickCard(dealer)
-    blackjack.pickCard(player)
-
-    blackjack.print_cards()
+    blackjack.autoplay()
