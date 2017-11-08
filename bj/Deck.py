@@ -8,6 +8,7 @@ class Deck(object):
 
     def __init__(self, num_decks = 1, suit_prefixes = ["C", "D", "H", "S"]):
         self.playing_deck = self.generate_playing_deck(num_decks, suit_prefixes)
+        self._suit_prefixes = suit_prefixes
 
     # The playing_deck property holds a list of all the cards in the deck.
     # Note that you should only initialize the playing_deck once, and then
@@ -183,6 +184,7 @@ class Deck(object):
 
         Arguments:
          shoe: The shoe to validate (A list of cards)
+         deck: A deck (another list of cards) to validate the shoe against.
 
         Returns:
          True if the validation passes, or False otherwise.
@@ -199,13 +201,41 @@ class Deck(object):
         return True
 
     #-------------------------------------------------------------
-    def init_shoe_from_playing_deck(self):
+    def setup_the_shoe(self, setup_card_list):
+        """
+        Cheater... This function will setup the shoe.
+        Just provide a list of cards in the setup_card_list and
+        they will be put on top of the shoe.
+
+        Arguments:
+         setup_card_list: The list of cards to setup the shoe
+        """
+        setup_card_list.reverse()
+        for card in setup_card_list:
+            try:
+                self.shoe.remove(card)
+            except ValueError:
+                raise Exception("\n\nThat's too obvious cheating!\n"
+                                "You provided a non-existing card for the deck setup: '{}'\n"
+                                "A list of all possible cards follows:\n"
+                                "   {}\n   {}\n   {}\n   {}".format(
+                                    card, ", ".join(self._generate_suit(self._suit_prefixes[0])),
+                                    ", ".join(self._generate_suit(self._suit_prefixes[1])),
+                                    ", ".join(self._generate_suit(self._suit_prefixes[2])),
+                                    ", ".join(self._generate_suit(self._suit_prefixes[3]))
+                                ))
+
+            self.shoe.append(card)
+
+    #-------------------------------------------------------------
+    def init_shoe_from_playing_deck(self, shuffle = False):
         """
         Copies the playing_deck in the shoe and shuffles the shoe.
         Use this function when the shoe doesn't have enough cards to pick from.
         """
         self.shoe = self.playing_deck[:]
-        self.shuffle_shoe()
+        if shuffle:
+            self.shuffle_shoe()
 
     #-------------------------------------------------------------
     def shuffle_shoe(self):
@@ -217,9 +247,10 @@ class Deck(object):
     #-------------------------------------------------------------
     def pick_card(self):
         """
-        Picks one card from the shoe
+        Picks one card from the shoe. If the shoe is empty, the
+        shoe is reinitialized and shuffled.
         """
         if not len(self.shoe):
-            self.init_shoe_from_playing_deck()
+            self.init_shoe_from_playing_deck(True)
 
         return self.shoe.pop()
