@@ -62,16 +62,13 @@ def extract_cards_from_file(file_descriptor):
 
 
 if __name__ == "__main__":
-    deck = Deck() # Use a single deck
+    deck = Deck() # Use a single deck with the default card labels
 
     input_cards = extract_cards_from_file(args.file)
 
     if input_cards:
         # If input_cards have been provided by the user, make sure that
         # these cards will be picked first from the shoe in the given order.
-        #
-        # We always pop() from the shoe when a player picks a card, so we need
-        # to append the cards in reverse order.
         deck.setup_the_shoe(input_cards)
     else:
         # Shuffle the deck

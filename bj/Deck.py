@@ -245,6 +245,8 @@ class Deck(object):
         Arguments:
          setup_card_list: The list of cards to setup the shoe
         """
+        # We always pop() from the shoe when a player picks a card, so we need
+        # to append the cards in reverse order.
         setup_card_list.reverse()
         for card in setup_card_list:
             try:

@@ -3,7 +3,8 @@ from bj.Deck import Deck
 
 class Player(object):
     """
-    An object that identifies a player
+    An object that identifies a player and keeps track
+    of the cards in a hand
     """
     class ROLE(Enum):
         PLAYER = 0
