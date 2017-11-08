@@ -10,6 +10,7 @@ class Player(object):
         PLAYER = 0
         DEALER = 1
 
+    #-------------------------------------------------------------
     def __init__(self, name, deck, role = ROLE.PLAYER):
         self.name = name
         self.role = role

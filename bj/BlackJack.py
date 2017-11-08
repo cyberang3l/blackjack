@@ -1,6 +1,9 @@
 from bj.Player import Player
 
 class blackjack(object):
+    """
+    The main class that coordinates a game (the players, the deck etc)
+    """
     #-------------------------------------------------------------
     def __init__(self, deck, dealer, player):
         #Arguments:

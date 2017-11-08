@@ -6,6 +6,7 @@ class Deck(object):
     """
     CARDS_PER_SINGLE_DECK = 52
 
+    #-------------------------------------------------------------
     def __init__(self, num_decks = 1, suit_prefixes = ["C", "D", "H", "S"]):
         self.playing_deck = self.generate_playing_deck(num_decks, suit_prefixes)
         self._suit_prefixes = suit_prefixes
