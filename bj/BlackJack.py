@@ -9,6 +9,7 @@ class blackjack(object):
         self.deck = deck
         self.dealer = dealer
         self.player = player
+        self.init_stats()
         isinstance(self.dealer, Player)
         isinstance(self.player, Player)
 
@@ -85,6 +86,39 @@ class blackjack(object):
                                               self.player.total_score()))
 
     #-------------------------------------------------------------
+    def print_stats(self):
+        """
+        A function to print the statistics in a good looking table
+        """
+        print("Played {} rounds\n"
+              "-------------------------------------------------".format(self.games_played))
+
+        rows = list(self.stats.keys())
+        columns = list(self.stats['winner'].keys())
+
+        row_format ="{:>15}" * (len(columns) + 1)
+
+        rows.sort()
+        columns.sort()
+
+        print(row_format.format("", *columns))
+        for stat in rows:
+            p = [self.stats[stat][name] for name in columns]
+            print(row_format.format(stat, *p))
+
+    #-------------------------------------------------------------
+    def init_stats(self):
+        """
+        Initialize the stats dict with zero values.
+        """
+        self.games_played = 0
+        self.stats = {
+            'winner':{self.dealer.name: 0, self.player.name: 0},
+            'total_points':{self.dealer.name: 0, self.player.name: 0},
+            'average_points':{self.dealer.name: 0, self.player.name: 0}
+        }
+
+    #-------------------------------------------------------------
     def find_winner(self):
         """
         The find_winner function will return a dict with the following information:
@@ -132,11 +166,6 @@ class blackjack(object):
         Arguments:
          rounds: The number of rounds to play
         """
-        stats = {
-            'winner':{self.dealer.name: 0, self.player.name: 0},
-            'total_points':{self.dealer.name: 0, self.player.name: 0},
-            'average_points':{self.dealer.name: 0, self.player.name: 0}
-        }
 
         for i in range(rounds):
             # Initial pick for all players
@@ -153,11 +182,10 @@ class blackjack(object):
                 self.print_cards()
 
             # Update stats
-            stats['winner'][res['winner'].name] += 1
-            stats['total_points'][self.dealer.name] += self.dealer.total_score()
-            stats['total_points'][self.player.name] += self.player.total_score()
+            self.stats['winner'][res['winner'].name] += 1
+            self.stats['total_points'][self.dealer.name] += self.dealer.total_score()
+            self.stats['total_points'][self.player.name] += self.player.total_score()
+            self.games_played += 1
 
-        stats['average_points'][self.dealer.name] = stats['total_points'][self.dealer.name] / float(rounds)
-        stats['average_points'][self.player.name] = stats['total_points'][self.player.name] / float(rounds)
-
-        return stats
+        self.stats['average_points'][self.dealer.name] = self.stats['total_points'][self.dealer.name] / float(rounds)
+        self.stats['average_points'][self.player.name] = self.stats['total_points'][self.player.name] / float(rounds)

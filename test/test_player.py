@@ -6,7 +6,7 @@ from bj.Deck import Deck
 # from the Deck class in order to pick cards, convert the cards to
 # numeric values etc. All of these are tested in the test_deck.py.
 #
-# In this test we only the counting and sum based on some given cards.
+# In this test we only do the counting and sum based on some given cards.
 
 class cardCountingTests(unittest.TestCase):
 

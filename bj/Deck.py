@@ -14,7 +14,7 @@ class Deck(object):
     # The playing_deck property holds a list of all the cards in the deck.
     # Note that you should only initialize the playing_deck once, and then
     # modify and play (shuffle, draw cards from etc) with the shoe. You should only
-    # change the playing_deck if you want to increase the number of card (by using more
+    # change the playing_deck if you want to increase the number of cards (by using more
     # decks) or change the suit labels of your cards. An update in the playing_deck
     # will reinitialize the shoe so if you modify the playing_deck in the middle of
     # the game, you will ruin your game.
@@ -240,7 +240,9 @@ class Deck(object):
         """
         Cheater... This function will setup the shoe.
         Just provide a list of cards in the setup_card_list and
-        they will be put on top of the shoe.
+        they will be put on top of the shoe. Note that currently this function
+        only works for one deck of cards. So if you have duplicates in your
+        setup_card_list, things will get messed up.
 
         Arguments:
          setup_card_list: The list of cards to setup the shoe

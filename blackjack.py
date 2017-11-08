@@ -19,26 +19,6 @@ parser.add_argument("-f", "--file",
 
 args = parser.parse_args()
 
-def print_stats(stats, total_played):
-    """
-    A function to print some statistics
-    """
-    print("Played {} rounds\n"
-          "-------------------------------------------------".format(total_played))
-
-    rows = list(stats.keys())
-    columns = list(stats['winner'].keys())
-
-    row_format ="{:>15}" * (len(columns) + 1)
-
-    rows.sort()
-    columns.sort()
-
-    print(row_format.format("", *columns))
-    for stat in rows:
-        p = [stats[stat][name] for name in columns]
-        print(row_format.format(stat, *p))
-
 def extract_cards_from_file(file_descriptor):
     """
     Reads and extracts a comma separated list of cards from a file.
@@ -57,6 +37,10 @@ def extract_cards_from_file(file_descriptor):
     if file_descriptor:
         with file_descriptor as f:
             input_cards = [card.strip() for card in f.read().split(",")]
+
+        if isinstance(input_cards, list):
+            # Remove blank entries that may be inserted from trailing commas
+            input_cards = list(filter(None, input_cards))
 
     return input_cards
 
@@ -82,7 +66,8 @@ if __name__ == "__main__":
     bj = blackjack(deck, dealer, player)
 
     if args.batch:
-        stats = bj.autoplay(args.batch, True)
-        print_stats(stats, args.batch)
+        bj.init_stats()
+        bj.autoplay(args.batch, True)
+        bj.print_stats()
     else:
         bj.autoplay()
