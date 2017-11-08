@@ -1,6 +1,6 @@
 # Blackjack
 
-This a blackjack python with a very simplified set of rules.
+This is a blackjack python program with a very simplified set of rules.
 
 At the moment, the program only supports autoplaying with either a single shuffled deck, or a list of cards provided with the command line option `--file`. A `--batch` option has also been added that will autoplay more than one games and print some very basic statistics.
 
@@ -14,7 +14,7 @@ Comments with some basic explanation have been added in all the different classe
 
 ### How to run the program
 
-* First clone the repository
+* First clone the repository.
 * Execute the unit tests: `python3 -m unittest discover -v test` (The `run_tests.sh` script will execute exactly the same command).
 * Check the help page of the main program: `python3 blackjack.py --help`
 * Autoplay a single game: `python3 blackjack.py`
@@ -38,7 +38,7 @@ Ran 6 tests in 0.004s
 OK
 ```
 
-Plain execution of the main program. A single deck is generated, shuffled, and one round is played between the Dealer and Sam. The winner is printed on top.
+Plain execution of the main program. A single deck is generated, shuffled, and one round is played between the Dealer and Sam. The winner is printed on top:
 ```ruby
 $ python3 blackjack.py
 dealer
@@ -54,7 +54,7 @@ dealer: D5, HQ, S8 (Total: 23)
    sam: CA, H9 (Total: 20)
 ```
 
-Batch autoplay. Call the program with the `--batch` option and provide the number of rounds that you want to play. In the following example 10 rounds are played.
+Batch autoplay. Call the program with the `--batch` option and provide the number of rounds that you want to play. In the following example 10 rounds are played:
 ```ruby
 $ python3 blackjack.py --batch 10
 Played 10 rounds
