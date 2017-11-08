@@ -13,7 +13,7 @@ class Player(object):
         self.name = name
         self.role = role
         self.deck = deck
-        self.cards = []
+        self.hand = []
 
     # The role property indicates the type of the player:
     #  normal player or dealer.
@@ -49,16 +49,16 @@ class Player(object):
 
     # The cards property holds a list with the cards of the player
     @property
-    def cards(self):
-        return self._cards
+    def hand(self):
+        return self._hand
 
-    @cards.setter
-    def cards(self, cards):
-        self._cards = cards
+    @hand.setter
+    def hand(self, cards):
+        self._hand = cards
 
-    @cards.deleter
-    def cards(self):
-        del self._cards
+    @hand.deleter
+    def hand(self):
+        del self._hand
 
     #-------------------------------------------------------------
     def pickCard(self):
@@ -66,7 +66,7 @@ class Player(object):
         Picks a card from the shoe in the deck and adds the card in the player's
         self.cards list
         """
-        self.cards.append(self.deck.pick_card())
+        self.hand.append(self.deck.pick_card())
 
     #-------------------------------------------------------------
     def score(self):
@@ -74,7 +74,7 @@ class Player(object):
         Returns a list with the score for each card that the player
         is currently holding
         """
-        return [self.deck.get_card_value(card) for card in self.cards]
+        return [self.deck.get_card_value(card) for card in self.hand]
 
     def total_score(self):
         """

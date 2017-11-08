@@ -73,11 +73,11 @@ class blackjack(object):
 
         print("{:>{}}: {} (Total: {})".format(self.dealer.name,
                                               max_name_len,
-                                              ", ".join(self.dealer.cards),
+                                              ", ".join(self.dealer.hand),
                                               self.dealer.total_score()))
         print("{:>{}}: {} (Total: {})".format(self.player.name,
                                               max_name_len,
-                                              ", ".join(self.player.cards),
+                                              ", ".join(self.player.hand),
                                               self.player.total_score()))
 
     #-------------------------------------------------------------
