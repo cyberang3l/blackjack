@@ -19,36 +19,23 @@ parser.add_argument("-f", "--file",
 
 args = parser.parse_args()
 
-def extract_cards_from_file(file_descriptor):
-    """
-    Reads and extracts a comma separated list of cards from a file.
-    Doesn't bother making any format checks (if the file is not comma
-    separated, or having junk etc) because the Deck class makes thorough
-    card checks. If the format is not good and garbage is passed, the
-    issue will be captured by the deck validation code.
+if __name__ == "__main__":
+    deck = Deck() # Use a single deck with the default card labels
 
-    Arguments:
-     file_descriptor: a file descriptor to read the cards from.
-
-    Returns:
-     A list with the cards in the order they were read
-    """
+    # Reads and extracts a comma separated list of cards from a file.
+    # Doesn't bother making any format checks (if the file is not comma
+    # separated, or having junk etc) because the Deck class makes thorough
+    # card checks. If the format is not good and garbage is passed, the
+    # issue will be captured by the deck validation code.
     input_cards = ''
-    if file_descriptor:
-        with file_descriptor as f:
+    if args.file:
+        with args.file as f:
             input_cards = [card.strip() for card in f.read().split(",")]
 
         if isinstance(input_cards, list):
             # Remove blank entries that may be inserted from trailing commas
             input_cards = list(filter(None, input_cards))
 
-    return input_cards
-
-
-if __name__ == "__main__":
-    deck = Deck() # Use a single deck with the default card labels
-
-    input_cards = extract_cards_from_file(args.file)
 
     if input_cards:
         # If input_cards have been provided by the user, make sure that
