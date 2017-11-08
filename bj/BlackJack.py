@@ -58,6 +58,9 @@ class blackjack(object):
         """
         Makes an initial pick (draws two cards) for all the players.
         """
+        self.player.clearHand()
+        self.dealer.clearHand()
+
         self.player.pickCard()
         self.dealer.pickCard()
         self.player.pickCard()
@@ -118,7 +121,7 @@ class blackjack(object):
             return {'winner': self.dealer, 'who_draws': None}
 
     #-------------------------------------------------------------
-    def autoplay(self, rounds = 1):
+    def autoplay(self, rounds = 1, quiet = False):
         """
         The game will autoplay as many rounds have been told to play
         by the 'rounds' argument.
@@ -126,15 +129,32 @@ class blackjack(object):
         Arguments:
          rounds: The number of rounds to play
         """
-        # Initial pick for all players
+        stats = {
+            'winner':{self.dealer.name: 0, self.player.name: 0},
+            'total_points':{self.dealer.name: 0, self.player.name: 0},
+            'average_points':{self.dealer.name: 0, self.player.name: 0}
+        }
 
-        self.initPick()
+        for i in range(rounds):
+            # Initial pick for all players
+            self.initPick()
 
-        # Print the results and the winner
-        res = self.find_winner()
-        while not res['winner']:
-            res['who_draws'].pickCard()
+            # Print the results and the winner
             res = self.find_winner()
+            while not res['winner']:
+                res['who_draws'].pickCard()
+                res = self.find_winner()
 
-        print(res['winner'].name)
-        self.print_cards()
+            if not quiet:
+                print(res['winner'].name)
+                self.print_cards()
+
+            # Update stats
+            stats['winner'][res['winner'].name] += 1
+            stats['total_points'][self.dealer.name] += self.dealer.total_score()
+            stats['total_points'][self.player.name] += self.player.total_score()
+
+        stats['average_points'][self.dealer.name] = stats['total_points'][self.dealer.name] / float(rounds)
+        stats['average_points'][self.player.name] = stats['total_points'][self.player.name] / float(rounds)
+
+        return stats

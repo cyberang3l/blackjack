@@ -61,6 +61,14 @@ class Player(object):
         del self._hand
 
     #-------------------------------------------------------------
+    def clearHand(self):
+        """
+        We call this function in the beginning of each round in order to
+        discard existing cards.
+        """
+        self.hand = []
+
+    #-------------------------------------------------------------
     def pickCard(self):
         """
         Picks a card from the shoe in the deck and adds the card in the player's
