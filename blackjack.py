@@ -39,13 +39,30 @@ def print_stats(stats, total_played):
         p = [stats[stat][name] for name in columns]
         print(row_format.format(stat, *p))
 
-if __name__ == "__main__":
+def extract_cards_from_file(file_descriptor):
+    """
+    Reads and extracts a comma separated list of cards from a file
+    Ensures that the cards are valid cards with labels C, D, H or S
+
+    Arguments:
+    file_descriptor: a file descriptor to read the cards from.
+
+    Returns:
+     A list with the cards in the order they were read
+    """
     input_cards = ''
-    if args.file:
-        with args.file as f:
+    if file_descriptor:
+        with file_descriptor as f:
             input_cards = [card.strip() for card in f.read().split(",")]
 
+    return input_cards
+
+
+if __name__ == "__main__":
     deck = Deck() # Use a single deck
+
+    input_cards = extract_cards_from_file(args.file)
+
     if input_cards:
         # If input_cards have been provided by the user, make sure that
         # these cards will be picked first from the shoe in the given order.

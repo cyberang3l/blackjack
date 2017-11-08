@@ -9,6 +9,7 @@ class Deck(object):
     def __init__(self, num_decks = 1, suit_prefixes = ["C", "D", "H", "S"]):
         self.playing_deck = self.generate_playing_deck(num_decks, suit_prefixes)
         self._suit_prefixes = suit_prefixes
+        self._decks_in_playing_deck = num_decks
 
     # The playing_deck property holds a list of all the cards in the deck.
     # Note that you should only initialize the playing_deck once, and then
@@ -23,9 +24,10 @@ class Deck(object):
 
     @playing_deck.setter
     def playing_deck(self, playing_deck):
-        if not self.validate_playing_deck(playing_deck):
-            raise Exception("\n\nSomething wrong with your deck. Please use the"
-                            " generate_playing_deck()\n""function to generate your deck correctly.")
+        failed_reason = self.validate_playing_deck(playing_deck)
+        if failed_reason:
+            raise Exception("\n\n{}.\nPlease use the generate_playing_deck() "
+                            "function to generate your deck correctly.".format(failed_reason))
 
         self._playing_deck = playing_deck
         self.init_shoe_from_playing_deck()
@@ -42,9 +44,10 @@ class Deck(object):
 
     @shoe.setter
     def shoe(self, shoe):
-        if not self.validate_shoe(shoe):
-            raise Exception("\n\nSomething wrong with your shoe. Please ensure that the"
-                            " shoe contains\n""cards that already exist in your initial (full) playing_deck.")
+        failed_reason = self.validate_shoe(shoe)
+        if failed_reason:
+            raise Exception("\n\n{}.\nPlease ensure that the shoe contains cards"
+                            "that already exist in your initial (full) playing_deck".format(failed_reason))
         self._shoe = shoe
 
     @shoe.deleter
@@ -85,7 +88,6 @@ class Deck(object):
          A list that represents a single deck with 52 cards
         """
         assert isinstance(suit_labels, list), "The number of decks must be an integer."
-        suit_labels = list(set(suit_labels)) # Remove duplicate labels
         assert (len(suit_labels) == 4), "A suit must be having 4 labels and no duplicates. {} provided:\n   {}".format(len(suit_labels), ', '.join(suit_labels))
 
         deck = []
@@ -129,6 +131,7 @@ class Deck(object):
         assert isinstance(number_of_decks, int), "The number of decks must be an integer."
 
         playing_deck = self._generate_deck(suit_labels)
+        self._decks_in_playing_deck = number_of_decks
 
         return playing_deck * number_of_decks
 
@@ -143,7 +146,8 @@ class Deck(object):
          deck: The deck to validate (a python list)
 
         Returns:
-         True if the validation passes, or False if there is an error
+         An empty string if the validation passes, or a string that explains what
+         went wrong with the validation otherwise.
         """
         if deck == None:
             deck = self.playing_deck
@@ -153,27 +157,52 @@ class Deck(object):
 
         full_decks_in_deck = int(len(deck) / type(self).CARDS_PER_SINGLE_DECK)
 
+        # Count that all 13 cards from all suits exist in the deck.
         card_count = [0] * 13
+
+        # Check the suit labels and ensure that there are exactly 4,
+        # and all of them have the same number of cards
+        suit_count = {}
 
         for card in deck:
             if not isinstance(card, str): return False
+            # First check that we can extract the value from a card
             value = card[-1]
+            suit = ''
             if value == "A": card_count[0] += 1
             elif value == "0": card_count[9] += 1
             elif value == "J": card_count[10] += 1
             elif value == "Q": card_count[11] += 1
             elif value == "K": card_count[12] += 1
             else:
-                i = int(value)
+                try:
+                    i = int(value)
+                except ValueError:
+                    return "The card '{}' is invalid".format(card)
+
                 card_count[i-1] += 1
 
-        if len(set(card_count)) != 1: return False
+            if value == "0":
+                suit = card[:-2]
+            else:
+                suit = card[:-1]
+
+            if suit in suit_count.keys():
+                suit_count[suit] += 1
+            else:
+                suit_count[suit] = 1
+
+        # Some cards are missing
+        if len(set(card_count)) != 1: return "Cards are missing from some suits"
+        if len(set(suit_count.values())) != 1: return "Cards are missing from some suits"
+
         # Each deck has four suits, so since we have already counted how many individual cards
         # were found in the deck, divide by 4 to see if the cards we counted match the number of
         # decks.
-        if (card_count[0] / 4 != full_decks_in_deck): return False
+        if (card_count[0] / 4 != full_decks_in_deck): return "The deck is not complete"
+        if (len(suit_count.keys())) != 4: return "You must be having exactly 4 suits in a deck. No more, no less. {} found".format(len(suit_count.values()))
 
-        return True
+        return ''
 
     #-------------------------------------------------------------
     def validate_shoe(self, shoe = None, deck = None):
@@ -195,10 +224,12 @@ class Deck(object):
             deck = self.playing_deck
 
         for card in shoe:
-            if card not in deck:
-                return False
+            if shoe.count(card) == 0:
+                return "Card '{}' in shoe not in deck".format(card)
+            elif shoe.count(card) > deck.count(card):
+                return "Card '{}' in shoe exists more times than what it exists in the deck".format(card)
 
-        return True
+        return ''
 
     #-------------------------------------------------------------
     def setup_the_shoe(self, setup_card_list):
