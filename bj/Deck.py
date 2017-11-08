@@ -111,6 +111,8 @@ class Deck(object):
 
         if value == "A": return 11
         elif value in ["J", "Q", "K", "0"]: return 10
+        elif value == '1': raise Exception("\n\nThe card '{}' is invalid. If you need an Ace,\n"
+                                           "change the label of your card to '{}A'".format(card, card[:-1]))
 
         return int(value)
 
@@ -177,6 +179,8 @@ class Deck(object):
             else:
                 try:
                     i = int(value)
+                    if (i == 1):
+                        return "The card '{}' is invalid. If you need an Ace,\nchange the label your card to '{}A'".format(card, card[:-1])
                 except ValueError:
                     return "The card '{}' is invalid".format(card)
 

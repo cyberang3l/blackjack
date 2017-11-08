@@ -56,7 +56,8 @@ class blackjack(object):
     #-------------------------------------------------------------
     def initPick(self):
         """
-        Makes an initial pick (draws two cards) for all the players.
+        Clears the player's hand and makes an initial pick
+        (draws two cards) for all the players.
         """
         self.player.clearHand()
         self.dealer.clearHand()
@@ -93,17 +94,19 @@ class blackjack(object):
         yet (thus, the winner is None) the 'who_draws' key will hold the Person class
         of the person that has to pick a card next.
         """
-        # If both players pick 21, players wins
-        if self.dealer.total_score() == self.player.total_score() == 21:
+        # If both players pick 21 at start, players wins
+        if ((self.dealer.total_score() == self.player.total_score() == 21) and
+            ((len(self.dealer.hand) == len(self.player.hand) == 2))):
             return {'winner': self.player, 'who_draws': None}
-        # If both players pick 22, dealer wins
-        elif self.dealer.total_score() == self.player.total_score() == 22:
+        # If both players pick 22 at start, dealer wins
+        elif ((self.dealer.total_score() == self.player.total_score() == 22) and
+              ((len(self.dealer.hand) == len(self.player.hand) == 2))):
             return {'winner': self.dealer, 'who_draws': None}
-        # If the dealer has 21,but not the player, the dealer wins
-        elif self.dealer.total_score() == 21:
+        # If the dealer has 21, but not the player, the dealer wins
+        elif self.dealer.total_score() == 21 and self.player.total_score() != 21:
             return {'winner': self.dealer, 'who_draws': None}
-        # If the player has 21,but not the dealer, the player wins
-        elif self.player.total_score() == 21:
+        # If the player has 21, but not the dealer, the player wins
+        elif self.player.total_score() == 21 and self.dealer.total_score() != 21:
             return {'winner': self.player, 'who_draws': None}
         # If the players goes over 21, the dealer wins
         elif self.player.total_score() > 21:

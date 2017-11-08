@@ -41,11 +41,14 @@ def print_stats(stats, total_played):
 
 def extract_cards_from_file(file_descriptor):
     """
-    Reads and extracts a comma separated list of cards from a file
-    Ensures that the cards are valid cards with labels C, D, H or S
+    Reads and extracts a comma separated list of cards from a file.
+    Doesn't bother making any format checks (if the file is not comma
+    separated, or having junk etc) because the Deck class makes thorough
+    card checks. If the format is not good and garbage is passed, the
+    issue will be captured by the deck validation code.
 
     Arguments:
-    file_descriptor: a file descriptor to read the cards from.
+     file_descriptor: a file descriptor to read the cards from.
 
     Returns:
      A list with the cards in the order they were read
