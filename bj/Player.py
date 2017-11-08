@@ -66,17 +66,7 @@ class Player(object):
         Picks a card from the shoe in the deck and adds the card in the player's
         self.cards list
         """
-
         self.cards.append(self.deck.pick_card())
-
-    #-------------------------------------------------------------
-    def initialPick(self):
-        """
-        If it is an initial pick, the player should
-        get two cards from the shoe
-        """
-        self.pickCard()
-        self.pickCard()
 
     #-------------------------------------------------------------
     def score(self):

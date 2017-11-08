@@ -58,8 +58,10 @@ class blackjack(object):
         """
         Makes an initial pick (draws two cards) for all the players.
         """
-        self.dealer.initialPick()
-        self.player.initialPick()
+        self.player.pickCard()
+        self.dealer.pickCard()
+        self.player.pickCard()
+        self.dealer.pickCard()
 
     #-------------------------------------------------------------
     def print_cards(self):
