@@ -20,7 +20,7 @@ Comments with some basic explanation have been added in all the different classe
 * Autoplay a single game: `python3 blackjack.py`
 
 
-####Different execution modes and sample output:
+#### Different execution modes and sample output:
 
 Execute the unit tests:
 ```no-highlight
